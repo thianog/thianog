@@ -1,0 +1,5 @@
+- 👋 Hi, I’m @thianog
+- 👀 I’m interested in developing WEB3 business relationships and opportunities.
+- 🌱 I’m currently learning about smart contracts and metaverses.
+- 💞️ I’m looking to collaborate on community managing and development.
+- 📫 DISCORD: Thianog#3722.
