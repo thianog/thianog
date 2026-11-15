@@ -46,15 +46,15 @@ link para o registro original.
 
 | Status | Definição |
 |---|---|
-| **Não iniciada** | Nenhuma ação oficial identificada. |
+| **Não iniciada** | O político ainda não tomou nenhuma atitude oficial em relação a esta promessa. |
 | **Em andamento** | Existe ação concreta (projeto de lei, decreto, orçamento, licitação). |
 | **Cumprida** | Entregue conforme prometido. |
 | **Cumprida parcialmente** | Entregue com escopo menor. |
 | **Modificada** | O próprio político mudou a proposta publicamente. |
 | **Abandonada/Revertida** | Desistência declarada ou ato contrário ao prometido. |
 
-- Toda promessa começa como **Não iniciada**. Isso significa que não
-  encontramos ação oficial, e não que nada foi feito.
+- Toda promessa começa como **Não iniciada**: o político ainda não tomou
+  nenhuma atitude oficial em relação a esta promessa.
 - **Toda mudança de status tem ao menos uma evidência** com link e data.
 - O status exibido é o do fato mais recente com evidência aprovada.
 - **O histórico completo fica visível.** Mudanças de status publicadas não são

@@ -52,8 +52,8 @@ aprovada, ela aparece como **Não iniciada**.
 
 **Por quê:** é a definição do briefing ("nenhuma ação oficial identificada")
 e é o estado inicial, não uma mudança de status. Por isso não exige evidência.
-A página de metodologia deve deixar claro que "não iniciada" significa "não
-encontramos ação oficial", e não "o político não fez nada".
+Texto público do status (revisto em D11): "o político ainda não tomou
+nenhuma atitude oficial em relação a esta promessa".
 
 ## D6 — Status atual = atualização aprovada com a data de referência mais recente (2026-11-15)
 
@@ -85,6 +85,17 @@ metodológicas e devem ser registradas aqui.
 
 Cobre as fases 1 e 2 do roteiro. Outros cargos (fase 3) entram com
 `alter type cargo add value`.
+
+## D11 — Texto público de "Não iniciada" (2026-11-15)
+
+**Decisão (do responsável pelo projeto):** a definição exibida de **Não
+iniciada** é "O político ainda não tomou nenhuma atitude oficial em relação a
+esta promessa." Substitui a formulação "nenhuma ação oficial identificada".
+
+**Consequência:** como o texto afirma que não houve atitude oficial (e não
+apenas que ela não foi encontrada), a cobertura do monitoramento (etapa 5)
+precisa ser ampla, e uma contestação com fonte que mostre ato oficial deve
+gerar atualização de status com prioridade.
 
 ---
 

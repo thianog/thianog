@@ -376,7 +376,7 @@ where a.situacao_revisao = 'aprovada'
 order by a.promessa_id, a.data_referencia desc, a.aprovado_em desc;
 
 -- Sem atualização aprovada, a promessa aparece como "não iniciada"
--- (nenhuma ação oficial identificada). Ver docs/METODOLOGIA.md.
+-- (o político ainda não tomou nenhuma atitude oficial). Ver docs/METODOLOGIA.md.
 create view promessa_publica with (security_invoker = true) as
 select
   p.id,

@@ -25,7 +25,7 @@ export type Status = (typeof STATUS)[number];
 export const STATUS_INFO: Record<Status, { rotulo: string; definicao: string }> = {
   nao_iniciada: {
     rotulo: "Não iniciada",
-    definicao: "Nenhuma ação oficial identificada.",
+    definicao: "O político ainda não tomou nenhuma atitude oficial em relação a esta promessa.",
   },
   em_andamento: {
     rotulo: "Em andamento",
