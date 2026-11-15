@@ -10,7 +10,8 @@
  *
  *   npm run coleta:tse -- [--ano 2026] [--sem-banco] [--uf AC,BR]
  *
- * Os arquivos ficam em DADOS_DIR (padrão ./dados), fora do git.
+ * Os PDFs são guardados no banco (tabela arquivo) e também em DADOS_DIR
+ * (padrão ./dados, fora do git), junto com o manifesto da coleta.
  * Nada aqui é inventado: se o formato do TSE mudar ou faltar um eleito, o
  * script para e avisa.
  */
@@ -49,6 +50,7 @@ interface DocumentoColetado {
   arquivo: string;
   hash: string;
   tamanho: number;
+  conteudo: Buffer;
 }
 
 // ---------------------------------------------------------------------------
@@ -154,6 +156,13 @@ async function gravarPolitico(sql: postgres.Sql, e: Eleito, coletaId: string): P
   return linha.id;
 }
 
+async function gravarArquivo(sql: postgres.Sql, d: DocumentoColetado) {
+  await sql`
+    insert into arquivo (hash_sha256, conteudo, tamanho_bytes, tipo_mime)
+    values (${d.hash}, ${d.conteudo}, ${d.tamanho}, 'application/pdf')
+    on conflict (hash_sha256) do nothing`;
+}
+
 async function gravarDocumento(
   sql: postgres.Sql,
   politicoId: string,
@@ -240,7 +249,13 @@ async function main() {
             const destino = path.join(dados, relativo);
             await mkdir(path.dirname(destino), { recursive: true });
             await writeFile(destino, conteudo);
-            docs.push({ caminhoNoPacote: nome, arquivo: relativo, hash: sha256(conteudo), tamanho: conteudo.length });
+            docs.push({
+              caminhoNoPacote: nome,
+              arquivo: relativo,
+              hash: sha256(conteudo),
+              tamanho: conteudo.length,
+              conteudo,
+            });
           },
         );
 
@@ -249,7 +264,10 @@ async function main() {
         }
         if (sql) {
           const politicoId = await gravarPolitico(sql, e, coletaCand!);
-          for (const d of docs) await gravarDocumento(sql, politicoId, url, coletaProp!, d);
+          for (const d of docs) {
+            await gravarArquivo(sql, d);
+            await gravarDocumento(sql, politicoId, url, coletaProp!, d);
+          }
         }
         manifestoEleitos.push({
           cargo: e.cargo,
@@ -258,7 +276,13 @@ async function main() {
           nome_urna: e.nomeUrna,
           partido: e.partido,
           turno: e.turno,
-          documentos: docs.map((d) => ({ url_oficial: url, ...d })),
+          documentos: docs.map((d) => ({
+            url_oficial: url,
+            caminho_no_pacote: d.caminhoNoPacote,
+            arquivo: d.arquivo,
+            hash: d.hash,
+            tamanho: d.tamanho,
+          })),
         });
         console.log(`[${uf}] ${e.cargo} ${e.nomeUrna} (${e.partido}): ${docs.length} PDF(s)`);
       }

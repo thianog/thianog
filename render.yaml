@@ -1,0 +1,35 @@
+# Promessômetro na Render (Blueprint). Passo a passo em
+# promessometro/docs/DEPLOY-RENDER.md.
+#
+# Custos (confira em render.com/pricing antes de criar):
+#   - site: plano "free" (dorme após 15 min sem acesso; a 1ª visita demora).
+#     Troque para "starter" no lançamento.
+#   - banco: "basic-256mb" (pago). O banco gratuito da Render expira em
+#     30 dias e os dados são apagados, por isso não é usado aqui.
+
+services:
+  - type: web
+    name: promessometro
+    runtime: node
+    plan: free
+    region: virginia
+    rootDir: promessometro
+    buildCommand: npm ci && npm run build
+    # Aplica migrações pendentes antes de subir o site (idempotente).
+    startCommand: npm run db:migrar && npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: promessometro-db
+          property: connectionString
+
+databases:
+  - name: promessometro-db
+    plan: basic-256mb
+    region: virginia
+    databaseName: promessometro
+    user: promessometro
+    postgresMajorVersion: "16"

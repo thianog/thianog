@@ -1,0 +1,40 @@
+name: Promessômetro — coleta TSE
+
+# Roda a coleta de eleitos e propostas de governo e grava no banco de
+# produção. Disparo manual: Actions > "Promessômetro — coleta TSE" > Run.
+# Requer o segredo PROMESSOMETRO_DATABASE_URL (External Database URL da
+# Render, terminando em ?sslmode=require).
+
+on:
+  workflow_dispatch:
+    inputs:
+      ano:
+        description: Ano da eleição
+        default: "2026"
+        required: true
+
+concurrency: coleta-tse
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: promessometro
+    env:
+      DATABASE_URL: ${{ secrets.PROMESSOMETRO_DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: promessometro/package-lock.json
+      - run: npm ci
+      - run: npm run db:migrar
+      - run: npm run coleta:tse -- --ano "${{ inputs.ano }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: manifesto-coleta-tse
+          path: promessometro/dados/manifestos/

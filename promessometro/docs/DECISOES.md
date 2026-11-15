@@ -147,14 +147,56 @@ e 82, redação da EC nº 111/2021). Prefeitos ainda não implementados (fase 2)
 
 PDFs e pacotes ficam em `DADOS_DIR` (padrão `./dados`, ignorado pelo git);
 `documento.arquivo_path` é relativo a essa pasta. Os pacotes ZIP são apagados
-após a extração (`--manter-zips` para guardar). **Em aberto:** mover para
-armazenamento permanente (Supabase Storage) antes do lançamento.
+após a extração (`--manter-zips` para guardar). Armazenamento
+permanente: ver D19.
 
 ## D17 — Político e documento não passam pela fila de revisão (2026-11-15)
 
 São cópia mecânica de dados oficiais (sem IA, sem interpretação), conferidos
 automaticamente (D12). A revisão humana obrigatória vale para o que envolve
 interpretação: promessas extraídas e mudanças de status.
+
+## D18 — Hospedagem na Render, sem Supabase e sem Vercel (2026-11-15)
+
+Revê D2 e D8.
+
+**Decisão:** site (Next.js) e banco (PostgreSQL 16) na Render, criados pelo
+Blueprint `render.yaml` na raiz do repositório. Passo a passo em
+`docs/DEPLOY-RENDER.md`.
+
+**Por quê:** o responsável pelo projeto já tem conta na Render e quer um custo
+pequeno e previsível. Um só provedor para site e banco.
+
+**Consequências:**
+- Site no plano gratuito enquanto não há público (dorme após 15 min sem
+  acesso); banco no menor plano pago, porque o gratuito expira em 30 dias e
+  apaga os dados.
+- As migrações rodam no início de cada deploy (idempotentes).
+- Em banco gerenciado o usuário pode não poder criar papéis; as migrações
+  0002–0004 deixam o RLS ligado e só criam as políticas por papel quando
+  possível. O site usa a conexão do dono e lê apenas as visões públicas (D4).
+- Login do painel de revisão (etapa 3) será próprio do app, com a tabela
+  `revisor`, em vez de Supabase Auth.
+
+## D19 — PDFs guardados no próprio banco (2026-11-15)
+
+Resolve o "em aberto" de D16.
+
+**Decisão:** tabela `arquivo` (conteúdo `bytea` endereçado pelo SHA-256).
+Um trigger recalcula o hash na gravação e recusa conteúdo que não bate.
+
+**Por quê:** serviços gratuitos da Render não têm disco permanente, e um
+serviço de armazenamento separado seria mais um custo. Os 36 PDFs de 2026
+somam ~122 MB, o que cabe com folga num banco pequeno. Se o volume crescer
+muito (fase 3), migrar para armazenamento de objetos.
+
+## D20 — Coleta roda no GitHub Actions (2026-11-15)
+
+O workflow manual `.github/workflows/promessometro-coleta-tse.yml` roda a
+coleta e grava no banco de produção pela URL externa (segredo
+`PROMESSOMETRO_DATABASE_URL`). Gratuito, e segue o briefing ("jobs
+agendados: GitHub Actions"). O manifesto de cada execução fica salvo como
+artefato da execução.
 
 ---
 

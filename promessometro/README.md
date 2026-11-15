@@ -50,7 +50,9 @@ O site público lê apenas as visões `promessa_publica`,
 
 ## Rodando localmente
 
-Requisitos: Node.js 22+ e PostgreSQL 15+ (local ou Supabase).
+Requisitos: Node.js 22+ e PostgreSQL 15+.
+
+Publicação na Render: [`docs/DEPLOY-RENDER.md`](docs/DEPLOY-RENDER.md).
 
 ```bash
 cp .env.example .env.local   # preencha DATABASE_URL e TEST_DATABASE_URL

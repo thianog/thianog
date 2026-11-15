@@ -8,7 +8,7 @@
 --   * Histórico visível: atualização aprovada (e suas evidências) não pode ser
 --     alterada nem apagada; correções entram como nova atualização.
 
-create extension if not exists pgcrypto;
+-- gen_random_uuid() é nativo do PostgreSQL 13+; nenhuma extensão é necessária.
 
 -- ---------------------------------------------------------------------------
 -- Tipos

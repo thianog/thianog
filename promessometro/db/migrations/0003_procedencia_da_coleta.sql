@@ -23,5 +23,11 @@ alter table documento add column coleta_id uuid references coleta (id);
 alter table documento add column caminho_no_pacote text;
 
 alter table coleta enable row level security;
-grant select on coleta to anon, authenticated;
-create policy coleta_leitura on coleta for select to anon, authenticated using (true);
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'anon') then
+    execute 'grant select on coleta to anon, authenticated';
+    execute 'create policy coleta_leitura on coleta for select to anon, authenticated using (true)';
+  end if;
+end
+$$;
