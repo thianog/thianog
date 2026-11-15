@@ -9,20 +9,26 @@
     "lint": "eslint",
     "db:migrar": "tsx --env-file-if-exists=.env.local scripts/db/migrar.ts",
     "test:db": "tsx --env-file-if-exists=.env.local --test tests/db/*.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "coleta:tse": "tsx --env-file-if-exists=.env.local scripts/coleta/tse.ts",
+    "test:unidade": "tsx --test tests/unidade/*.test.ts"
   },
   "dependencies": {
+    "csv-parse": "^7.0.3",
     "next": "16.4.6",
     "postgres": "^4.1.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "undici": "^8.12.4",
+    "yauzl": "^3.4.0"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "4.3.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/yauzl": "^3.4.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
     "tailwindcss": "4.3.3",

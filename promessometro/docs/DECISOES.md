@@ -97,13 +97,70 @@ apenas que ela não foi encontrada), a cobertura do monitoramento (etapa 5)
 precisa ser ampla, e uma contestação com fonte que mostre ato oficial deve
 gerar atualização de status com prioridade.
 
+## D12 — Coleta só pelo Portal de Dados Abertos do TSE (2026-11-15)
+
+**Decisão:** eleitos e propostas de governo vêm dos pacotes oficiais do
+Portal de Dados Abertos (`dadosabertos.tse.jus.br`, arquivos em
+`cdn.tse.jus.br`): `consulta_cand_<ano>.zip` e
+`proposta_governo_<ano>_<UF>.zip`.
+
+**Por quê:** o DivulgaCandContas recusa acesso automatizado ("Access Denied"
+do próprio site). Não contornamos esse bloqueio; os dados abertos são o canal
+oficial para uso automatizado e trazem os mesmos PDFs.
+
+**Como identificamos o eleito:** `DS_CARGO` = PRESIDENTE/GOVERNADOR e
+`DS_SIT_TOT_TURNO` = ELEITO. O coletor exige exatamente 1 presidente e 1
+governador por UF; se não bater, para sem gravar nada.
+
+**Como ligamos a proposta ao eleito:** o PDF no pacote se chama
+`<UF>/<ano><UF><SQ_CANDIDATO>_<NN>.pdf`. Um candidato pode ter mais de um
+arquivo (`_01`, `_02`...); todos viram documentos.
+
+## D13 — Procedência registrada por versão do pacote (2026-11-15)
+
+Cada pacote baixado vira uma linha em `coleta` (URL, SHA-256, tamanho,
+`Last-Modified`). Político e documento apontam para a coleta de origem, e o
+documento guarda o caminho do PDF dentro do pacote. Qualquer pessoa pode
+baixar o mesmo pacote e conferir o hash. A cada execução também é gerado um
+manifesto JSON em `dados/manifestos/`.
+
+## D14 — Link do político no TSE = página do conjunto de dados (2026-11-15)
+
+**Decisão:** `politico.tse_url` aponta para
+`https://dadosabertos.tse.jus.br/dataset/candidatos-<ano>`, onde está o
+registro de onde os dados saíram.
+
+**Por quê:** a página individual do candidato no DivulgaCandContas não pode
+ser verificada automaticamente (D12), e não publicamos link que não foi
+conferido.
+
+**Em aberto:** trocar pelo link da página do candidato no DivulgaCandContas
+depois de conferência humana, no painel de revisão (etapa 3).
+
+## D15 — Mandato calculado pela regra constitucional (2026-11-15)
+
+A partir das eleições de 2026, posse do Presidente em 5 de janeiro e dos
+Governadores em 6 de janeiro do ano seguinte, mandato de 4 anos (CF, arts. 28
+e 82, redação da EC nº 111/2021). Prefeitos ainda não implementados (fase 2).
+
+## D16 — Arquivos guardados fora do git (2026-11-15)
+
+PDFs e pacotes ficam em `DADOS_DIR` (padrão `./dados`, ignorado pelo git);
+`documento.arquivo_path` é relativo a essa pasta. Os pacotes ZIP são apagados
+após a extração (`--manter-zips` para guardar). **Em aberto:** mover para
+armazenamento permanente (Supabase Storage) antes do lançamento.
+
+## D17 — Político e documento não passam pela fila de revisão (2026-11-15)
+
+São cópia mecânica de dados oficiais (sem IA, sem interpretação), conferidos
+automaticamente (D12). A revisão humana obrigatória vale para o que envolve
+interpretação: promessas extraídas e mudanças de status.
+
 ---
 
 ## Pendências conhecidas
 
-- **Rede do ambiente de desenvolvimento:** os servidores do TSE
-  (`dadosabertos.tse.jus.br`, `cdn.tse.jus.br`, `divulgacandcontas.tse.jus.br`)
-  estão bloqueados no ambiente atual. A etapa 2 (coleta) precisa desses hosts
-  liberados para ser escrita e testada contra os arquivos reais.
+- Fotos oficiais dos eleitos: o TSE publica pacotes por UF
+  (`foto_cand<ano>_<UF>_div.zip`); falta coletar e definir onde hospedar.
 - Trilha de auditoria para edição de promessas já aprovadas (hoje só o
   histórico de status é imutável).

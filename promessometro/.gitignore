@@ -42,3 +42,6 @@ next-env.d.ts
 
 # exemplo de configuração pode ser versionado
 !.env.example
+
+# dados baixados das fontes oficiais (PDFs, pacotes, manifestos)
+/dados/

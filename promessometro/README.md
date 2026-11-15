@@ -13,7 +13,7 @@ critério vale para todos os partidos, e nada é publicado sem revisão humana.
 ## Roteiro
 
 1. [x] Repositório, banco e modelo de dados
-2. [ ] Coleta do TSE (eleitos e planos de governo de 2026)
+2. [x] Coleta do TSE (eleitos e planos de governo de 2026)
 3. [ ] Extração de promessas com IA e painel de revisão
 4. [ ] Site público (páginas de político e promessa)
 5. [ ] Monitoramento automático e sugestão de status
@@ -24,6 +24,8 @@ critério vale para todos os partidos, e nada é publicado sem revisão humana.
 ```
 db/migrations/     esquema do banco em SQL (fonte da verdade do modelo)
 scripts/db/        runner de migrações
+scripts/coleta/    coleta nas fontes oficiais (TSE)
+src/lib/tse/       leitura dos arquivos do TSE (código puro, testado)
 src/app/           site (Next.js App Router)
 src/lib/dominio.ts tipos e rótulos (status, cargos...)
 src/lib/db.ts      conexão com o banco (somente servidor)
@@ -54,7 +56,9 @@ Requisitos: Node.js 22+ e PostgreSQL 15+ (local ou Supabase).
 cp .env.example .env.local   # preencha DATABASE_URL e TEST_DATABASE_URL
 npm install
 npm run db:migrar            # cria as tabelas
+npm run test:unidade         # testes sem banco
 npm run test:db              # testa as regras do banco (APAGA o banco de teste)
+npm run coleta:tse           # baixa eleitos e propostas de 2026 do TSE e grava no banco
 npm run dev                  # http://localhost:3000
 ```
 
