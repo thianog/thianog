@@ -11,6 +11,9 @@ import { migrar } from "../../scripts/db/migrar";
 
 const url = process.env.TEST_DATABASE_URL;
 if (!url) throw new Error("Defina TEST_DATABASE_URL para rodar os testes de banco.");
+if (url === process.env.DATABASE_URL) {
+  throw new Error("TEST_DATABASE_URL não pode ser o banco principal: o teste apaga todos os dados.");
+}
 
 const sql = postgres(url, { max: 1, onnotice: () => {} });
 const HASH = "a".repeat(64);

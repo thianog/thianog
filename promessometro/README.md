@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Promessômetro
 
-## Getting Started
+Plataforma pública e apartidária que reúne as promessas de campanha dos
+políticos eleitos no Brasil, cada uma com link para a fonte oficial, e acompanha
+o status de cumprimento ao longo do mandato.
 
-First, run the development server:
+**A credibilidade é o produto:** toda afirmação tem fonte verificável, o mesmo
+critério vale para todos os partidos, e nada é publicado sem revisão humana.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Metodologia: [`docs/METODOLOGIA.md`](docs/METODOLOGIA.md)
+- Decisões de projeto: [`docs/DECISOES.md`](docs/DECISOES.md)
+
+## Roteiro
+
+1. [x] Repositório, banco e modelo de dados
+2. [ ] Coleta do TSE (eleitos e planos de governo de 2026)
+3. [ ] Extração de promessas com IA e painel de revisão
+4. [ ] Site público (páginas de político e promessa)
+5. [ ] Monitoramento automático e sugestão de status
+6. [ ] Lançamento; depois, prefeitos das capitais
+
+## Estrutura
+
+```
+db/migrations/     esquema do banco em SQL (fonte da verdade do modelo)
+scripts/db/        runner de migrações
+src/app/           site (Next.js App Router)
+src/lib/dominio.ts tipos e rótulos (status, cargos...)
+src/lib/db.ts      conexão com o banco (somente servidor)
+tests/db/          testes das regras do banco contra PostgreSQL real
+docs/              metodologia e registro de decisões
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Modelo de dados
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Tabela | Conteúdo |
+|---|---|
+| `politico` | nome, cargo, UF, partido, mandato, foto, link e identificador no TSE |
+| `documento` | plano de governo/discurso/entrevista: URL oficial, cópia salva, hash SHA-256 |
+| `promessa` | citação literal, resumo neutro, página, tema, verificável, situação da revisão |
+| `atualizacao_status` | status, data do fato, descrição neutra, revisor e data de aprovação |
+| `evidencia` | link, data e fonte de cada atualização (uma ou mais) |
+| `contestacao` | mensagem e link de fonte enviados pelo público |
+| `tema`, `revisor` | tabelas de apoio |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+O site público lê apenas as visões `promessa_publica`,
+`historico_status_publico` e `placar_politico`, que contêm só o que foi aprovado.
 
-## Learn More
+## Rodando localmente
 
-To learn more about Next.js, take a look at the following resources:
+Requisitos: Node.js 22+ e PostgreSQL 15+ (local ou Supabase).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+cp .env.example .env.local   # preencha DATABASE_URL e TEST_DATABASE_URL
+npm install
+npm run db:migrar            # cria as tabelas
+npm run test:db              # testa as regras do banco (APAGA o banco de teste)
+npm run dev                  # http://localhost:3000
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Regra de ouro
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Nunca inventar dados ou links. Todo dado vem de fonte oficial coletada pelo
+pipeline e passa por revisão humana antes de ser publicado.
